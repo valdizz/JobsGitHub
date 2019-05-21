@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Jobs GitHub</string>
+    <string name="msg_connection_unavailable">Connection is unavailable!</string>
+</resources>
