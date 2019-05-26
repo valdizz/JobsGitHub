@@ -1,17 +1,15 @@
 package com.valdizz.jobsgithub.viewmodel
 
 import android.app.Application
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.valdizz.jobsgithub.R
+import com.valdizz.jobsgithub.common.NetConnectionManager
 import com.valdizz.jobsgithub.model.Job
 import com.valdizz.jobsgithub.model.SearchRepositoryProvider
+
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,29 +23,12 @@ class JobsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val context = application
     private val jobs: MutableLiveData<MutableList<Job>> = MutableLiveData()
-    private val error: MutableLiveData<String> = MutableLiveData()
-    private val isLoading: MutableLiveData<Boolean> = MutableLiveData()
-    private val connManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    private val request = NetworkRequest.Builder()
-        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-        .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-        .build()
-    private var isConnected = false
-
-    init {
-        connManager.registerNetworkCallback(request, object : ConnectivityManager.NetworkCallback(){
-            override fun onAvailable(network: Network?) {
-                isConnected = true
-            }
-
-            override fun onUnavailable() {
-                isConnected = false
-            }
-        })
-    }
+    val error: MutableLiveData<String> = MutableLiveData()
+    val isLoading: MutableLiveData<Boolean> = MutableLiveData()
+    private val connectionManager = NetConnectionManager(context)
 
     fun getJobs(description: String, location: String): LiveData<MutableList<Job>> {
-        if (isConnected) {
+        if (connectionManager.isConnected) {
             loadJobs(description, location)
         }
         else {
@@ -75,13 +56,5 @@ class JobsViewModel(application: Application) : AndroidViewModel(application) {
                 isLoading.postValue(false)
             }
         })
-    }
-
-    fun getError(): LiveData<String> {
-        return error
-    }
-
-    fun isLoading(): LiveData<Boolean> {
-        return isLoading
     }
 }

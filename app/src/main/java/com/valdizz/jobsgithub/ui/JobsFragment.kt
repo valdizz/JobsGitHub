@@ -21,7 +21,11 @@ import kotlinx.android.synthetic.main.fragment_jobs.*
  *
  * @author Vlad Kornev
  */
-class JobsFragment : Fragment () {
+class JobsFragment : Fragment() {
+
+    companion object {
+        fun newInstance() = JobsFragment()
+    }
 
     private var jobsViewModel: JobsViewModel? = null
 
@@ -42,16 +46,12 @@ class JobsFragment : Fragment () {
         rv_jobs.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
         rv_jobs.adapter = adapter
 
-        jobsViewModel?.getJobs("Java", "London")?.observe(this, Observer { list -> adapter.setData(list) })
-        jobsViewModel?.getError()?.observe(this, Observer { message -> showMessage(message) })
-        jobsViewModel?.isLoading()?.observe(this, Observer { isLoading -> progress_bar.isVisible = isLoading })
+        jobsViewModel?.getJobs("Java", "London")?.observe(this, Observer { list -> adapter.jobsList = list })
+        jobsViewModel?.error?.observe(this, Observer { message -> showMessage(message) })
+        jobsViewModel?.isLoading?.observe(this, Observer { isLoading -> progress_bar.isVisible = isLoading })
     }
 
     private fun showMessage(message: String) {
         Snackbar.make(rv_jobs, message, Snackbar.LENGTH_LONG).show()
-    }
-
-    companion object {
-        fun newInstance() = JobsFragment()
     }
 }

@@ -20,7 +20,9 @@ class JobsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_jobs)
 
         jobsViewModel = ViewModelProviders.of(this).get(JobsViewModel::class.java)
-        createJobsFragment()
+        if (savedInstanceState == null) {
+            createJobsFragment()
+        }
     }
 
     private fun createJobsFragment() {
